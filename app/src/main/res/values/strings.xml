@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">EDGES</string>
+    <string name="app_tagline">AI-Powered Meeting Assistant</string>
+    
+    <!-- Permission strings -->
+    <string name="permission_notification_listener">Notification Access</string>
+    <string name="permission_calendar">Calendar Access</string>
+    <string name="permission_post_notifications">Post Notifications</string>
+    
+    <!-- Action strings -->
+    <string name="action_schedule">Schedule</string>
+    <string name="action_dismiss">Dismiss</string>
+    <string name="action_get_started">Get Started</string>
+    <string name="action_continue">Continue</string>
+    <string name="action_grant">Grant</string>
+    
+    <!-- Screen titles -->
+    <string name="screen_home">Home</string>
+    <string name="screen_meetings">Meetings</string>
+    <string name="screen_permissions">Permissions</string>
+    
+    <!-- Status strings -->
+    <string name="status_pending">Pending</string>
+    <string name="status_scheduled">Scheduled</string>
+    <string name="status_dismissed">Dismissed</string>
+    
+    <!-- Service strings -->
+    <string name="service_notification_title">EDGES is monitoring notifications</string>
+    <string name="service_notification_text">Tap to open app</string>
+</resources>
