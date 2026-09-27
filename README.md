@@ -1,96 +1,156 @@
 # EDGES Notification Assistant
 
-An AI-powered Android notification assistant that monitors incoming notifications, uses Google Gemini AI to detect meetings, and schedules them in the user's calendar.
+An Android application that monitors incoming notifications, identifies likely meeting requests with Gemini-based AI analysis, and helps users schedule events in their calendar.
 
-## Project Structure
+## Overview
 
-```
-app/
-├── src/main/
-│   ├── java/com/edges/notificationassistant/
-│   │   ├── data/              # Data models
-│   │   │   ├── Notification.kt
-│   │   │   ├── Meeting.kt
-│   │   │   ├── AIResponse.kt
-│   │   │   ├── CalendarRequest.kt
-│   │   │   └── Preferences.kt
-│   │   ├── services/          # Background services
-│   │   ├── ui/                # Jetpack Compose UI
-│   │   │   └── theme/         # App theme
-│   │   ├── utils/             # Utility classes
-│   │   └── MainActivity.kt
-│   ├── res/                   # Resources
-│   └── AndroidManifest.xml
-└── build.gradle.kts
+EDGES is designed for the common workflow where notifications contain meeting invites, scheduling details, or follow-up requests. The app monitors notifications, analyzes text content, and decides whether to schedule, ask for confirmation, or dismiss the item.
+
+## What is implemented
+
+- Android app entry point and permission flow
+- Notification listener setup for monitoring incoming notifications
+- AI analysis flow using Google Gemini
+- Meeting detection with confidence scoring
+- Calendar scheduling support
+- MVVM-oriented project structure with model/data/service separation
+
+## What is still planned or incomplete
+
+- Production-grade configuration management for API keys
+- Full user testing across varied notification types
+- More robust handling for ambiguous meeting requests
+- UI refinements for end-to-end workflow validation
+- Additional privacy controls and notification filtering
+
+## Architecture
+
+```mermaid
+flowchart LR
+    A[Android Notification] --> B[EDGES Notification Listener]
+    B --> C[AIAnalyzer]
+    C --> D[Gemini API]
+    C --> E[MeetingDetailsProcessor]
+    E --> F[CalendarManager]
+    F --> G[Android Calendar]
 ```
 
 ## Technology Stack
 
-- **Language**: Kotlin
-- **UI Framework**: Jetpack Compose
-- **Architecture**: MVVM (Model-View-ViewModel)
-- **Minimum SDK**: API 26 (Android 8.0 Oreo)
-- **Target SDK**: API 34
+- Language: Kotlin
+- UI: Jetpack Compose
+- Architecture: MVVM
+- Minimum SDK: API 26
+- Target SDK: API 34
+- Networking: Retrofit + OkHttp
+- Serialization: Kotlin Serialization / Gson
+- Background work: WorkManager
+- AI: Google Gemini API
+- Calendar integration: Android CalendarContract
 
-## Key Dependencies
+## Project Structure
 
-- Jetpack Compose (UI)
-- Retrofit (HTTP client for Gemini API)
-- Kotlinx Serialization (JSON parsing)
-- Coroutines (Asynchronous programming)
-- WorkManager (Background tasks)
-- Android CalendarContract (Calendar integration)
+```text
+edges/
+├── app/
+│   ├── src/main/
+│   │   ├── AndroidManifest.xml
+│   │   ├── java/com/edges/notificationassistant/
+│   │   │   ├── MainActivity.kt
+│   │   │   ├── data/
+│   │   │   ├── services/
+│   │   │   ├── ui/
+│   │   │   └── utils/
+│   │   └── res/
+│   └── build.gradle.kts
+├── build.gradle.kts
+├── settings.gradle.kts
+├── gradlew
+├── gradlew.bat
+├── README.md
+├── .gitignore
+└── gradle/
+```
 
-## Data Models
+## Permissions
 
-### Notification
-Represents a captured notification from the Android system.
+The app requires Android permissions for the workflow to operate properly:
 
-### Meeting
-Represents a detected meeting with AI analysis results.
+- `INTERNET`
+- `READ_CALENDAR`
+- `WRITE_CALENDAR`
+- `BIND_NOTIFICATION_LISTENER_SERVICE`
+- `POST_NOTIFICATIONS` (Android 13+)
+- `WAKE_LOCK`
+- `FOREGROUND_SERVICE`
+- `RECEIVE_BOOT_COMPLETED`
 
-### AIResponse
-Structured response from Google Gemini AI containing meeting detection and decision.
+## Setup
 
-### CalendarRequest
-Calendar event creation request for scheduling meetings.
+1. Open the project in Android Studio.
+2. Sync Gradle files.
+3. Configure a valid Gemini API key in your local Android build configuration.
+4. Run the app on a supported Android device or emulator.
 
-### Preferences
-User preferences and app settings.
+## How it works
 
-## MVVM Architecture
+1. The app listens to notifications.
+2. Relevant notification content is sent to Gemini for analysis.
+3. The response is parsed into a structured meeting decision.
+4. If a meeting is detected with enough confidence, the app can schedule or prepare a calendar event.
+5. Ambiguous notifications remain pending for user review.
 
-- **Model**: Data classes, storage manager, API clients
-- **ViewModel**: Business logic and state management
-- **View**: Jetpack Compose screens and components
+## Installation notes
 
-## Required Permissions
+The app uses a direct Gemini API call from the Android client. This means the project must be configured with a valid key before it can make live AI requests.
 
-- `INTERNET` - API calls to Gemini
-- `READ_CALENDAR` / `WRITE_CALENDAR` - Calendar integration
-- `BIND_NOTIFICATION_LISTENER_SERVICE` - Notification access
-- `POST_NOTIFICATIONS` - Display notifications (Android 13+)
-- `WAKE_LOCK` - Background operation
-- `FOREGROUND_SERVICE` - Continuous monitoring
-- `RECEIVE_BOOT_COMPLETED` - Auto-restart after reboot
+Do not commit real API keys to version control.
 
-## Build Instructions
+## Usage
 
-1. Open project in Android Studio
-2. Sync Gradle files
-3. Build and run on device (API 26+)
+- Launch the app.
+- Grant calendar permissions.
+- Enable notification access.
+- Let the app monitor incoming notifications.
+- Review the detected meeting suggestions and scheduling decisions.
 
-## Next Steps
+## Example workflow
 
-- Implement JSON storage manager (Task 2)
-- Implement Gemini AI integration (Task 3)
-- Implement calendar integration (Task 4)
-- Build notification capture service (Task 6)
-- Create UI screens (Task 8)
+```text
+Notification arrives
+    -> App inspects notification text
+    -> Gemini decides whether it looks like a meeting request
+    -> If confidence is high, prompt to schedule the event
+    -> Calendar is updated with the meeting details
+```
 
-## Notes
+## Current limitations
 
-- Uses hardcoded Gemini API key for simplicity
-- No backend server - all API calls made directly from device
-- JSON file storage in app private directory
-- Requires internet connectivity for AI analysis
+- API key handling must be externalized before production use.
+- Notification parsing is not yet robust for every possible message format.
+- The app is mainly designed around meeting detection rather than general-purpose AI classification.
+- Some behaviors depend on Android permission flows and user settings.
+
+## Future improvements
+
+- Secure configuration management for API keys
+- Better handling for edge-case notifications
+- More explicit user review and confirmation flow
+- Advanced filtering for spam, marketing, or non-meeting traffic
+- Better testing coverage for notification parsing and meeting extraction
+
+## Security note
+
+This project should not store real API keys in source code or public repositories. Use a local configuration approach or secure build-time injection instead.
+
+## License
+
+This project is not currently documented with a formal repository-level license file. Confirm licensing before redistribution or commercial use.
+
+## Summary
+
+EDGES demonstrates Android application development, AI integration, background monitoring, and calendar automation. It is a useful portfolio project once the configuration and documentation are cleaned up and the repo is free of exposed credentials.
+
+---
+
+This README is intentionally focused on what is actually present in the project and what is still in progress.
